@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { CheckCircle, ExternalLink } from "lucide-react";
 import { ContributionSteps } from "./ContributionSteps";
 import { ContributionSummary } from "./ContributionSummary";
@@ -41,7 +42,7 @@ export function ContributionSuccess({
               : "Your data has been successfully contributed to the blockchain."}
           </p>
         </div>
-      </div>
+      </div>     
 
       <div className="space-y-3 bg-slate-50 p-4 rounded-md text-sm">
         <h3 className="font-medium">Contribution Details</h3>

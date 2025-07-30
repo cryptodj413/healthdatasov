@@ -48,13 +48,13 @@ export const uploadUserData = async (
   
   const fileString_origin = JSON.stringify(dataPackage);
   const parsed = JSON.parse(stringData);
-  const fileString = JSON.stringify(parsed);
-  // const fileString = JSON.stringify(stringData);
+  const mergedData = JSON.stringify({...dataPackage, ...parsed});
+  const fileString = JSON.stringify(mergedData);
 
-  console.log("******* origin: ", fileString_origin);
-  console.log("******* stringData: ", stringData);
+  // console.log("******* origin: ", fileString_origin);
+  // console.log("******* stringData: ", stringData);
   console.log("******* filestring: ", fileString);
-  const fileBlob = new Blob([fileString], { type: "application/json" });
+  const fileBlob = new Blob([mergedData], { type: "application/json" });
 
   // Encrypt the data
   const encryptedBlob = await clientSideEncrypt(fileBlob, signature);
