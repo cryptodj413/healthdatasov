@@ -1,9 +1,11 @@
 import Link from "next/link"
 import { CheckCircle, ExternalLink } from "lucide-react";
 import { ContributionSteps } from "./ContributionSteps";
-import { ContributionSummary } from "./ContributionSummary";
+// import { ContributionSummary } from "./ContributionSummary";
 import { ContributionData, DriveInfo, UserInfo } from "./types";
 import { getTransactionUrl } from "../../contracts/chains";
+import { Button } from "@/components/ui/button"
+import { useContributionFlow } from "./hooks/useContributionFlow";
 
 type ContributionSuccessProps = {
   contributionData: ContributionData;
@@ -24,6 +26,12 @@ export function ContributionSuccess({
   const proofCompleted = completedSteps.includes(4);
   const proofRequested = completedSteps.includes(3);
 
+  // const {  } = useContributionFlow()
+
+  const contributeMoreData = () => {
+    
+  }
+
   return (
     <div className="space-y-4">
       <div className="bg-green-50 p-4 rounded-md flex items-center">
@@ -36,13 +44,13 @@ export function ContributionSuccess({
             {fullyCompleted
               ? "Your data has been successfully contributed and your reward has been claimed."
               : proofCompleted
-              ? "Your data has been successfully contributed and verified by the TEE."
-              : proofRequested
-              ? "Your data has been contributed and proof request has been submitted."
-              : "Your data has been successfully contributed to the blockchain."}
+                ? "Your data has been successfully contributed and verified by the TEE."
+                : proofRequested
+                  ? "Your data has been contributed and proof request has been submitted."
+                  : "Your data has been successfully contributed to the blockchain."}
           </p>
         </div>
-      </div>     
+      </div>
 
       <div className="space-y-3 bg-slate-50 p-4 rounded-md text-sm">
         <h3 className="font-medium">Contribution Details</h3>
@@ -116,13 +124,24 @@ export function ContributionSuccess({
       {/* Stepper UI showing completed steps */}
       <ContributionSteps currentStep={0} completedSteps={completedSteps} />
 
-      {userInfo && (
+      {/* {userInfo && (
         <ContributionSummary
           userInfo={userInfo}
           driveInfo={driveInfo}
           isEncrypted={true}
         />
-      )}
+      )} */}
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <Button className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700" onClick={() => contributeMoreData()}>
+          Contribute More Data
+        </Button>
+        <Link href="/" className="flex-1">
+          <Button variant="outline" className="w-full bg-transparent">
+            Back to Home
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 }

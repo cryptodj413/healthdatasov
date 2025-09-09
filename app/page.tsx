@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Shield, Database, Coins, Users, ArrowRight, Heart, Lock, Zap } from "lucide-react"
-import Link from "next/link"
+import { useUserData } from "./profile/hooks/useUserData"
+import { userInfo } from "os"
 
 function MedicalBubble({
   x,
@@ -83,7 +85,19 @@ function FloatingMedicalBubbles() {
   )
 }
 
+
 export default function HomePage() {
+  const router = useRouter()
+  const { userInfo } = useUserData()
+  
+  const startContributing = () => {
+    if(!userInfo) {
+      router.push("/auth")
+    } else {
+      router.push("/dashboard")
+    }
+  }
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-blue-950 dark:via-slate-900 dark:to-green-950">
       <FloatingMedicalBubbles />
@@ -99,11 +113,9 @@ export default function HomePage() {
               HealthDataSov
             </span>
           </div>
-          <Link href="/auth">
-            <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700">
-              Get Started
-            </Button>
-          </Link>
+          <Button className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700" onClick={() => startContributing()}>
+            Get Started
+          </Button>
         </div>
       </header>
 
@@ -130,15 +142,14 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/auth">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 px-8 py-4 text-lg"
-              >
-                Start Contributing Data
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 px-8 py-4 text-lg"
+              onClick={() => startContributing()}
+            >
+              Start Contributing Data
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
           </div>
         </motion.div>
       </section>

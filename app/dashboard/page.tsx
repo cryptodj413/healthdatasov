@@ -222,6 +222,19 @@ export default function Dashboard() {
                       </div>
                     </div>
 
+                    {error && (
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <Button className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 flex-1">
+                          Try again
+                        </Button>
+                        <Link href="/" className="flex-1">
+                          <Button variant="outline" className="w-full bg-transparent">
+                            Back to Home
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
+
                     {!isConnected && (
                       <ConnectWalletButton
                         isOpen={isOpen}

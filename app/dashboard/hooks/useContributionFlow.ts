@@ -301,6 +301,6 @@ export function useContributionFlow() {
     isLoading,
     isSigningMessage,
     handleContributeData,
-    resetFlow,
+    resetFlow
   };
 }
