@@ -1,13 +1,20 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
+import { useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Heart, Database, Upload, LogOut, Loader2, AlertCircle, AlertTriangle } from "lucide-react"
-import Link from "next/link"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Heart,
+  Database,
+  Upload,
+  LogOut,
+  Loader2,
+  AlertCircle,
+  AlertTriangle,
+} from "lucide-react";
+import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useAccount } from "wagmi";
 import { useAuthModal } from "../auth/AuthModal";
@@ -16,13 +23,13 @@ import { useContributionFlow } from "./hooks/useContributionFlow";
 import { useUserData } from "../profile/hooks/useUserData";
 import { ContributionSteps } from "./ContributionSteps";
 import { ContributionSuccess } from "./ContributionSuccess";
-import { ContributionSummary } from "./ContributionSummary"
 import { DriveInfo, UserInfo } from "./types";
-import UserProfileCard from "../profile/UserProfile"
+import UserProfileCard from "../profile/UserProfile";
 
 export default function Dashboard() {
-  const [jsonData, setJsonData] = useState<any | null>(null);
+  const [jsonData, setJsonData] = useState<unknown | null>(null);
   const [stringData, setStringData] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
     isSuccess,
@@ -39,31 +46,29 @@ export default function Dashboard() {
 
   const { data: session } = useSession();
   const { userInfo, driveInfo } = useUserData();
-
-  // Para connection
   const { isConnected } = useAccount();
   const { isOpen, openModal, closeModal } = useAuthModal();
 
   const handleContribute = async () => {
+    if (!session?.user) return;
+    if (!stringData) return;
+    if (!userInfo || !driveInfo) return;
 
-    if (!session?.user) {
-      return;
-    }
-
-    if (stringData == null) return;
-
-    if (!userInfo || !driveInfo) {
-      return;
-    }
-
-    // Reset the flow before starting a new contribution
     resetFlow();
     await handleContributeData(userInfo, driveInfo, isConnected, stringData);
   };
 
-  const handleSignOut = () => {
-    signOut({ callbackUrl: "/" });
+  const handleContributeMore = () => {
+    resetFlow();
+    setJsonData(null);
+    setStringData(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
+
+  const handleSignOut = () => signOut({ callbackUrl: "/" });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-blue-950 dark:via-slate-900 dark:to-green-950">
@@ -94,10 +99,9 @@ export default function Dashboard() {
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* User Profile Card */}
           <UserProfileCard />
 
-          {/* Data Contribution Card */}
+          {/* Contribution Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -114,9 +118,8 @@ export default function Dashboard() {
                   Share your EMR data to earn rewards from VANA Data Liquidity Pools
                 </p>
               </CardHeader>
+
               <CardContent className="space-y-4">
-
-
                 {error && (
                   <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
@@ -132,6 +135,7 @@ export default function Dashboard() {
                     shareUrl={shareUrl}
                     userInfo={userInfo as UserInfo}
                     driveInfo={driveInfo as DriveInfo}
+                    onContributeMore={handleContributeMore}
                   />
                 ) : (
                   <div className="space-y-4">
@@ -143,20 +147,12 @@ export default function Dashboard() {
                       />
                     )}
 
-                    {/* Display user data summary */}
-                    {/* {userInfo && (
-                      <ContributionSummary
-                        userInfo={userInfo as UserInfo}
-                        driveInfo={driveInfo as DriveInfo}
-                        isEncrypted={false}
-                      />
-                    )} */}
-
+                    {/* Upload UI */}
                     <div className="border-2 border-dashed border-blue-200 dark:border-blue-700 rounded-lg p-8 text-center">
                       <Upload className="w-12 h-12 text-blue-400 mx-auto mb-4" />
                       <div className="space-y-4">
-
                         <input
+                          ref={fileInputRef}
                           type="file"
                           accept="application/json"
                           onChange={(e) => {
@@ -167,16 +163,16 @@ export default function Dashboard() {
                             reader.onload = (event) => {
                               try {
                                 const rawText = event.target?.result as string;
-                                console.log("**** rawText: ", rawText);
                                 const parsed = JSON.parse(rawText);
-                                console.log("**** parsed: ", parsed);
                                 setJsonData(parsed);
-                                console.log("**** stringData: ", JSON.stringify(parsed, null, 2));
-                                setStringData(JSON.stringify(parsed, null, 2))
+                                setStringData(JSON.stringify(parsed, null, 2));
                               } catch (err) {
-                                console.error("Invalid JSON file:", err);
+                                console.error("Invalid JSON:", err);
                                 setJsonData(null);
                                 setStringData(null);
+                                if (fileInputRef.current) {
+                                  fileInputRef.current.value = "";
+                                }
                               }
                             };
                             reader.readAsText(file);
@@ -192,7 +188,7 @@ export default function Dashboard() {
 
                         <Button
                           onClick={handleContribute}
-                          disabled={isLoading || !isConnected || !userInfo}
+                          disabled={isLoading || !isConnected || !userInfo || !stringData}
                           className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
                         >
                           {isLoading ? (
@@ -201,16 +197,16 @@ export default function Dashboard() {
                               {currentStep === 1
                                 ? "Uploading to Google Drive..."
                                 : currentStep === 2
-                                  ? isSigningMessage
-                                    ? "Signing message..."
-                                    : "Adding to blockchain..."
-                                  : currentStep === 3
-                                    ? "Requesting TEE proof..."
-                                    : currentStep === 4
-                                      ? "Processing proof..."
-                                      : currentStep === 5
-                                        ? "Claiming reward..."
-                                        : "Processing..."}
+                                ? isSigningMessage
+                                  ? "Signing message..."
+                                  : "Adding to blockchain..."
+                                : currentStep === 3
+                                ? "Requesting TEE proof..."
+                                : currentStep === 4
+                                ? "Processing proof..."
+                                : currentStep === 5
+                                ? "Claiming reward..."
+                                : "Processing..."}
                             </>
                           ) : (
                             <>
@@ -221,19 +217,6 @@ export default function Dashboard() {
                         </Button>
                       </div>
                     </div>
-
-                    {error && (
-                      <div className="flex flex-col sm:flex-row gap-4">
-                        <Button className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 flex-1">
-                          Try again
-                        </Button>
-                        <Link href="/" className="flex-1">
-                          <Button variant="outline" className="w-full bg-transparent">
-                            Back to Home
-                          </Button>
-                        </Link>
-                      </div>
-                    )}
 
                     {!isConnected && (
                       <ConnectWalletButton
@@ -257,5 +240,5 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }

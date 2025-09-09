@@ -1,11 +1,11 @@
-import Link from "next/link"
+"use client";
+
+import Link from "next/link";
 import { CheckCircle, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { ContributionSteps } from "./ContributionSteps";
-// import { ContributionSummary } from "./ContributionSummary";
 import { ContributionData, DriveInfo, UserInfo } from "./types";
 import { getTransactionUrl } from "../../contracts/chains";
-import { Button } from "@/components/ui/button"
-import { useContributionFlow } from "./hooks/useContributionFlow";
 
 type ContributionSuccessProps = {
   contributionData: ContributionData;
@@ -13,33 +13,26 @@ type ContributionSuccessProps = {
   shareUrl?: string;
   userInfo: UserInfo;
   driveInfo: DriveInfo;
+  onContributeMore: () => void;
 };
 
 export function ContributionSuccess({
   contributionData,
   completedSteps,
-  userInfo,
-  driveInfo,
+  shareUrl,
+  onContributeMore,
 }: ContributionSuccessProps) {
-  // Determine how many steps were completed
   const fullyCompleted = completedSteps.includes(5);
   const proofCompleted = completedSteps.includes(4);
   const proofRequested = completedSteps.includes(3);
 
-  // const {  } = useContributionFlow()
-
-  const contributeMoreData = () => {
-    
-  }
-
   return (
     <div className="space-y-4">
+      {/* Success Banner */}
       <div className="bg-green-50 p-4 rounded-md flex items-center">
         <CheckCircle className="h-6 w-6 text-green-600 mr-3" />
         <div>
-          <h3 className="font-medium text-green-800">
-            Contribution Successful!
-          </h3>
+          <h3 className="font-medium text-green-800">Contribution Successful!</h3>
           <p className="text-sm text-green-700">
             {fullyCompleted
               ? "Your data has been successfully contributed and your reward has been claimed."
@@ -47,13 +40,30 @@ export function ContributionSuccess({
                 ? "Your data has been successfully contributed and verified by the TEE."
                 : proofRequested
                   ? "Your data has been contributed and proof request has been submitted."
-                  : "Your data has been successfully contributed to the blockchain."}
+                  : "Your data has been contributed to the blockchain but not fully completed."}
           </p>
         </div>
       </div>
 
+      {/* Contribution Details */}
       <div className="space-y-3 bg-slate-50 p-4 rounded-md text-sm">
         <h3 className="font-medium">Contribution Details</h3>
+
+        {shareUrl && (
+          <div className="grid grid-cols-2 gap-2">
+            <div className="text-muted-foreground">Share Link</div>
+            <div className="font-mono text-xs truncate">
+              <a
+                href={shareUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-600 hover:text-blue-800 break-all"
+              >
+                {shareUrl}
+              </a>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-2">
           <div className="text-muted-foreground">File ID</div>
@@ -110,6 +120,7 @@ export function ContributionSuccess({
         </div>
       </div>
 
+      {/* Proof Results */}
       {proofCompleted && contributionData.teeProofData && (
         <div className="space-y-3 bg-slate-50 p-4 rounded-md text-sm">
           <h3 className="font-medium">TEE Proof Results</h3>
@@ -121,26 +132,37 @@ export function ContributionSuccess({
         </div>
       )}
 
-      {/* Stepper UI showing completed steps */}
+      {/* Steps */}
       <ContributionSteps currentStep={0} completedSteps={completedSteps} />
 
-      {/* {userInfo && (
-        <ContributionSummary
-          userInfo={userInfo}
-          driveInfo={driveInfo}
-          isEncrypted={true}
-        />
-      )} */}
-      {/* Action Buttons */}
+      {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-4">
-        <Button className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700" onClick={() => contributeMoreData()}>
-          Contribute More Data
-        </Button>
-        <Link href="/" className="flex-1">
-          <Button variant="outline" className="w-full bg-transparent">
-            Back to Home
-          </Button>
-        </Link>
+        <div className="flex-1">
+          {fullyCompleted ? (
+            <Button
+              className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+              onClick={onContributeMore}
+            >
+              Contribute More Data
+            </Button>
+          ) : (
+            <Button
+              variant="destructive"
+              className="w-full"
+              onClick={onContributeMore}
+            >
+              Try Again
+            </Button>
+          )}
+        </div>
+
+        <div className="flex-1">
+          <Link href="/" className="block w-full">
+            <Button variant="outline" className="w-full bg-transparent">
+              Back to Home
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );

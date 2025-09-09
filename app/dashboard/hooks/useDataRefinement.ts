@@ -69,11 +69,6 @@ export function useDataRefinement(): UseDataRefinementReturn {
     setError(null);
     
     try {
-      console.log("*************** RefinerInput: ", JSON.stringify({
-          file_id: input.file_id,
-          encryption_key: input.encryption_key,
-          refiner_id: input.refiner_id,
-        }));
       const response = await fetch('/api/refine', {
         method: 'POST',
         headers: {
@@ -85,8 +80,6 @@ export function useDataRefinement(): UseDataRefinementReturn {
           refiner_id: input.refiner_id,
         }),
       });
-
-      console.log("Response~~~~~~: ", response)
 
       if (!response.ok) {
         const errorData = await response.json();

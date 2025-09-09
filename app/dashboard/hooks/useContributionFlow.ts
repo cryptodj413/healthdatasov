@@ -249,13 +249,10 @@ export function useContributionFlow() {
 
     // Call the data refinement process
     try {
-      console.log("Starting data refinement...");
       const refinementResult = await refine({
         file_id: proofResult.fileId,
         encryption_key: signature,
       });
-
-      console.log("Data refinement completed:", refinementResult);
 
       markStepComplete(STEPS.PROCESS_PROOF);
 

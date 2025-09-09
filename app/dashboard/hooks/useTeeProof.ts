@@ -177,8 +177,6 @@ export const useTeeProof = () => {
         confirmations: 1,
       });
 
-      console.log("contributionProofReceipt", contributionProofReceipt);
-
       // Get job IDs for the file
       const jobIds = await getFileJobIds(fileId);
       if (jobIds.length === 0) {
@@ -190,8 +188,6 @@ export const useTeeProof = () => {
 
       // Get TEE details for the job
       const jobDetails = await getTeeDetails(latestJobId);
-
-      console.log("jobDetails", jobDetails);
 
       // Get consistent encryption parameters
       const { ivHex, ephemeralKeyHex } = getEncryptionParameters();
