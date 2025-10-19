@@ -13,12 +13,12 @@ import {
   Loader2,
   AlertCircle,
   AlertTriangle,
+  Wallet
 } from "lucide-react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useAccount } from "wagmi";
 import { useAuthModal } from "../auth/AuthModal";
-import { ConnectWalletButton } from "./ConnectWalletButton";
 import { useContributionFlow } from "./hooks/useContributionFlow";
 import { useUserData } from "../profile/hooks/useUserData";
 import { ContributionSteps } from "./ContributionSteps";
@@ -217,14 +217,6 @@ export default function Dashboard() {
                         </Button>
                       </div>
                     </div>
-
-                    {!isConnected && (
-                      <ConnectWalletButton
-                        isOpen={isOpen}
-                        openModal={openModal}
-                        closeModal={closeModal}
-                      />
-                    )}
 
                     {!userInfo && (
                       <div className="flex items-center bg-yellow-50 text-yellow-800 border border-yellow-200 p-2 text-xs rounded mt-2">

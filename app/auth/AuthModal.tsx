@@ -30,38 +30,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalCustomProps) {
 
   // If connected, show connected state
   if (isConnected && address) {
-    return (
-      <Dialog
-        open={isOpen}
-        onOpenChange={(open: boolean) => !open && onClose()}
-      >
-        <DialogContent className="sm:max-w-md bg-white text-gray-800 border border-gray-200 shadow-lg">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-gray-800">
-              Wallet Connected
-            </DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center space-y-4 py-4">
-            <div className="bg-blue-50 p-3 rounded-full">
-              <Wallet className="h-6 w-6 text-blue-600" />
-            </div>
-            <p className="text-sm font-mono bg-gray-100 px-2 py-1 rounded text-gray-800">
-              {address.slice(0, 6)}...{address.slice(-4)}
-            </p>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                disconnect();
-                onClose();
-              }}
-              className="mt-4"
-            >
-              Disconnect
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
+    onClose();
   }
 
   return (
